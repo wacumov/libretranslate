@@ -22,6 +22,29 @@ public struct Translator {
         return try await decodedData(for: request)
     }
 
+    public func translate(_ text: String, from sourceLanguage: String, to targetLanguage: String) async throws -> String {
+        let url = try makeURL(path: "/translate")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        struct RequestBody: Encodable {
+            let q: String
+            let source: String
+            let target: String
+            let api_key: String?
+        }
+        let body = RequestBody(q: text, source: sourceLanguage, target: targetLanguage, api_key: apiKey)
+        request.httpBody = try encoder.encode(body)
+
+        struct Response: Decodable {
+            let translatedText: String
+        }
+        let response: Response = try await decodedData(for: request)
+        return response.translatedText
+    }
+
     private func makeURL(path: String) throws -> URL {
         guard var components = URLComponents(string: url) else {
             throw URLError(.badURL)
