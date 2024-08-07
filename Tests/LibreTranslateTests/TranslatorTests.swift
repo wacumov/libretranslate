@@ -2,7 +2,7 @@ import LibreTranslate
 import XCTest
 
 final class TranslatorTests: XCTestCase {
-    let translator = Translator("https://libretranslate.de")
+    let translator = Translator("https://translate.terraprint.co")
 
     func testLanguages() async throws {
         let languages = try await translator.languages()
