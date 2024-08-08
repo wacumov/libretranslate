@@ -1,4 +1,6 @@
 public struct Language: Decodable {
-    public let code: String
+    public typealias Code = String
+
+    public let code: Code
     public let name: String
 }
