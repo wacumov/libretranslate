@@ -64,22 +64,23 @@ public struct Translator {
 
 private extension URLSession {
     func data(for request: URLRequest) async throws -> Data {
-        var task: URLSessionDataTask?
-        let onCancel = { task?.cancel() }
-        return try await withTaskCancellationHandler(
-            handler: { onCancel() },
-            operation: {
-                try await withCheckedThrowingContinuation { continuation in
-                    task = dataTask(with: request) { data, _, error in
-                        guard let data = data else {
-                            let error = error ?? URLError(.badServerResponse)
-                            return continuation.resume(throwing: error)
-                        }
-                        continuation.resume(returning: data)
+        var dataTask: URLSessionDataTask?
+        let onCancel = {
+            dataTask?.cancel()
+        }
+        return try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                dataTask = self.dataTask(with: request) { data, _, error in
+                    guard let data else {
+                        let error = error ?? URLError(.badServerResponse)
+                        return continuation.resume(throwing: error)
                     }
-                    task?.resume()
+                    continuation.resume(returning: data)
                 }
+                dataTask?.resume()
             }
-        )
+        } onCancel: {
+            onCancel()
+        }
     }
 }
