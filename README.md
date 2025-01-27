@@ -22,6 +22,6 @@ let package = Package(
 ```swift
 import LibreTranslate
 
-let translator = Translator("https://libretranslate.de")
+let translator = Translator("https://libretranslate.com")
 let translation = try await translator.translate("Hello", from: "en", to: "es")
 ```
